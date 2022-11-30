@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class GameBoard
   attr_accessor :board, :win_combos
 
@@ -17,11 +19,12 @@ class GameBoard
 
   def win_check
     win = false
-    for i in 0..win_combos.length - 1
-      if board.values_at(win_combos[i][0], win_combos[i][1], win_combos[i][2]) == %w[x x x]
+    (0..win_combos.length - 1).each do |i|
+      case board.values_at(win_combos[i][0], win_combos[i][1], win_combos[i][2])
+      when %w[x x x]
         puts 'X wins!'
         win = true
-      elsif board.values_at(win_combos[i][0], win_combos[i][1], win_combos[i][2]) == %w[y y y]
+      when %w[y y y]
         puts 'Y wins!'
         win = true
       end
@@ -34,6 +37,22 @@ class GameBoard
     puts 'TIE (board is full!)' if check == true
     check
   end
+
+  def space_taken?(move)
+    return unless (board[move - 1] == 'x') || (board[move - 1] == 'y')
+
+    puts 'Space taken, try again'
+    true
+  end
+
+  def record_move(move, symbol)
+    board[move - 1] = symbol
+    print_board
+  end
+
+  def game_over?
+    return true if full_board_check || win_check
+  end
 end
 
 class Player
@@ -43,20 +62,20 @@ class Player
     @symbol = symbol
   end
 
+  def verify_move(move)
+    move.is_a?(Integer) && move.positive? && move < 10
+  end
+
   def make_move(game_board)
     move = 0
-    until move.positive? && move < 10
+    until verify_move(move) && !game_board.space_taken?(move)
       loop do
-        puts 'choose space (1-9)'
+        puts 'Choose space (1-9)'
         move = gets.to_i
-        # check if space is taken
-        next if game_board.board[move - 1] == 'x' or game_board.board[move - 1] == 'y'
-
         break
       end
     end
-    game_board.board[move - 1] = symbol
-    game_board.print_board
+    move
   end
 end
 
@@ -70,21 +89,30 @@ class Game
   end
 
   def playing
-    puts 'Welcome to the game'
-    game_board.print_board
-
     loop do
       puts 'Player X:'
-      player_x.make_move(game_board)
-      game_board.win_check
-      break if game_board.win_check == true
-      break if game_board.full_board_check == true
+      move = player_x.make_move(game_board)
+      game_board.record_move(move, player_x.symbol)
+      break if game_board.game_over?
 
       puts 'Player Y:'
-      player_y.make_move(game_board)
-      break if game_board.win_check == true
+      move = player_y.make_move(game_board)
+      game_board.record_move(move, player_y.symbol)
+      break if game_board.game_over?
+    end
+  end
 
-      break if game_board.full_board_check == true
+  def instructions
+    puts 'Welcome to the game'
+    game_board.print_board
+  end
+
+  def play_game
+    instructions
+    loop do
+      game = Game.new
+      game.playing
+      break if new_game_check == 'n'
     end
   end
 
@@ -96,10 +124,4 @@ class Game
   end
 end
 
-# loop do
-#   game = Game.new
-#   game.playing
-#   next if game.new_game_check == 'y'
-
-#   break
-# end
+# Game.new.play_game
