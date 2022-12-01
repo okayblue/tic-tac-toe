@@ -95,6 +95,31 @@ describe GameBoard do
   end
 
   describe '#full_board_check' do
+    context 'if board is full' do
+      subject(:full_board) { described_class.new }
+      before do
+        full_board.board = ['x','x','y','y','x','x','y','x','y',]
+      end
+      it 'returns true' do
+        expect(full_board.full_board_check).to be(true)
+      end
+      it 'prints message' do
+        expect(full_board).to receive(:puts).with('TIE (board is full!)').once
+        full_board.full_board_check
+      end
+    end
+    context 'if board is not full' do
+      subject(:not_full_board) { described_class.new }
+
+      it 'returns false' do
+        check = not_full_board.full_board_check
+        expect(check).to be(false)
+      end
+      it 'does not print message' do
+        expect(not_full_board).not_to receive(:puts).with('TIE (board is full!)')
+        not_full_board.full_board_check
+      end
+    end
   end
 
   describe '#game_over?' do
