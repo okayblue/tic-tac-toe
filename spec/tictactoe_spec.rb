@@ -18,20 +18,33 @@ describe GameBoard do
     context 'When a player wins' do
       subject(:win_game) { described_class.new }
       context 'If player is x' do
-        it 'returns true' do
+        before do
           win_game.board = ['x', 'x', 'x', 4, 5, 6, 7, 8, 9]
-          expect(win_game.win_check). to be true
+        end
+        it 'returns true' do
+          expect(win_game.win_check).to be true
+        end
+        it 'prints the correct message for x' do
+          expect(win_game).to receive(:puts).with('X wins!').once
+          win_game.win_check
         end
       end
       context 'If player is y' do
-        it 'returns true' do
+        before do
           win_game.board = ['y', 2, 3, 'y', 5, 6, 'y', 8, 9]
+        end
+        it 'returns true' do
           expect(win_game.win_check).to be true
         end
+        it 'prints the correct message for y' do
+          expect(win_game).to receive(:puts).with('Y wins!').once
+          win_game.win_check
+        end
       end
-      it 'prints the message for the correct player' do
-      end
+
       it 'results in game over' do
+        allow(win_game).to receive(:win_check).and_return(true)
+        expect(win_game).to be_game_over
       end
     end
 
@@ -41,6 +54,8 @@ describe GameBoard do
         expect(continue_game.win_check).to be false
       end
       it 'does not result in game over' do
+        allow(continue_game).to receive(:win_check).and_return(false)
+        expect(continue_game).not_to be_game_over
       end
     end
 
