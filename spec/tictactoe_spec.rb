@@ -7,6 +7,10 @@ describe GameBoard do
       it 'has 9 spaces' do
         expect(new_game.board.length).to eq(9)
       end
+      it 'Update space' do
+        new_game.board[1] = 'y'
+        expect(new_game.board[1]).to eq('y')
+      end
     end
   end
   
@@ -80,8 +84,27 @@ describe GameBoard do
 
   describe '#game_over?' do
     subject(:game_end) { described_class.new }
-    it 'is game over' do
-     
+
+    context 'When board is full' do
+      it 'is game over' do
+        allow(game_end).to receive(:full_board_check).and_return(true)
+        expect(game_end).to be_game_over
+      end
+    end
+
+    context 'When a player wins' do
+      it 'is game over' do
+        allow(game_end).to receive(:win_check).and_return(true)
+        expect(game_end).to be_game_over
+      end
+    end
+
+    context 'When the board is not full and no players won' do
+      it 'is not game over' do
+        allow(game_end).to receive(:win_check).and_return(false)
+        allow(game_end).to receive(:full_board_check).and_return(false)
+        expect(game_end).not_to be_game_over
+      end
     end
   end
 
