@@ -149,6 +149,22 @@ describe GameBoard do
   end
 
   describe '#record_move' do
+    subject(:moving) { described_class.new }
+
+    context 'adds the symbol to the correct spot' do
+      it 'Adds y to the 4th spot' do
+        symbol = 'y'
+        move = 4
+        moving.record_move(move, symbol)
+        expect(moving.board[3]).to eq('y')
+      end
+      it 'Adds x to the 9th spot' do
+        symbol = 'x'
+        move = 9
+        moving.record_move(move, symbol)
+        expect(moving.board[8]).to eq('x')
+      end
+    end
   end
 end
 
