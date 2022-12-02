@@ -150,7 +150,6 @@ describe GameBoard do
 
   describe '#record_move' do
     subject(:moving) { described_class.new }
-
     context 'adds the symbol to the correct spot' do
       it 'Adds y to the 4th spot' do
         symbol = 'y'
@@ -196,9 +195,33 @@ describe Player do
     
   end
   describe '#make_move' do
+    let(:game_board) { instance_double(GameBoard) }
     subject(:player_turn) { described_class.new('x') }
+
     context 'When move is valid' do
-  
+      before do
+        allow(game_board).to receive(:space_taken?)
+        allow(player_turn).to receive(:gets).and_return('4')
+      end
+      it 'returns move' do
+        turn = player_turn.make_move(game_board)
+        expect(turn).to eq(4)
+      end
+      it 'sends the move to GameBoard' do
+        turn = player_turn.make_move(game_board)
+        expect(game_board).to receive(:record_move).with(turn, player_turn.symbol).once
+        game_board.record_move(turn, player_turn.symbol)
+      end
+    end
+    context 'When move is invalid' do
+      before do
+        allow(game_board).to receive(:space_taken?)
+        allow(player_turn).to receive(:gets).and_return('a', '444', 'hi', '7')
+      end
+      it 'continues looping until valid move is given' do
+        expect(player_turn).to receive(:puts).exactly(4).times
+        player_turn.make_move(game_board)
+      end
     end
   end
 
