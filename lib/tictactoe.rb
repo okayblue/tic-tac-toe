@@ -69,11 +69,8 @@ class Player
   def make_move(game_board)
     move = 0
     until verify_move(move) && !game_board.space_taken?(move)
-      loop do
-        puts 'Choose space (1-9)'
-        move = gets.to_i
-        break
-      end
+      puts 'Choose space (1-9)'
+      move = gets.to_i
     end
     move
   end
