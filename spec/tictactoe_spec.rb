@@ -224,5 +224,49 @@ describe Player do
       end
     end
   end
+end
 
+describe Game do
+  describe '#playing' do
+    let(:board) { instance_double(GameBoard) }
+    let(:x) { instance_double(Player) }
+    subject(:new_game) { described_class.new }
+
+    context 'When playing' do
+      before do
+        allow(x).to receive(:make_move).and_return(5)
+        allow(board).to receive(:record_move)
+      end
+      it 'Gets the right move' do
+        move = x.make_move(board)
+        expect(move).to be(5)
+      end
+    end
+  end
+  
+  describe '#new_game_check' do
+    subject(:end_game) { described_class.new }
+    context 'Valid input' do
+      before do
+        allow(end_game).to receive(:new_game_check).and_return('y')
+      end
+      it 'returns the correct input' do
+        expect(end_game.new_game_check).to eq('y')
+      end
+      before do
+        allow(end_game).to receive(:gets).and_return('y', 'x')
+      end
+      it 'Stops loop when correct' do
+        expect(end_game.new_game_check).to eq('y')
+      end
+    end
+    context('Invalid input') do
+      before do
+        allow(end_game).to receive(:gets).and_return('e', '5', 'n')
+      end
+      it 'loops until correct input' do
+        expect(end_game.new_game_check).to eq('n')
+      end
+    end
+  end
 end
